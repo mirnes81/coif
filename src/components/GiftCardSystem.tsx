@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Gift, CreditCard, Heart, Download, Mail, X, Check } from 'lucide-react';
-import { sendEmail } from '../services/emailService';
 
 interface GiftCard {
   id: string;
@@ -113,46 +112,42 @@ export default function GiftCardSystem({ isOpen, onClose }: GiftCardSystemProps)
 
   const handlePurchase = async () => {
     setIsProcessing(true);
-    
-    try {
-      // Email au destinataire
-      const emailData = {
-        to: giftData.recipientEmail,
-        from: 'bonjour@sabina-coiffure.ch',
-        subject: `🎁 Vous avez reçu une carte cadeau de ${giftData.senderName}`,
-        html: generateGiftCardEmail()
-      };
 
-      const result = await sendEmail(emailData);
-      
-      if (!result.success) {
-        throw new Error('Erreur envoi email destinataire');
+    try {
+      const giftCardNumber = generateGiftCardNumber();
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-gift-card-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          recipientName: giftData.recipientName,
+          recipientEmail: giftData.recipientEmail,
+          senderName: giftData.senderName,
+          senderEmail: giftData.senderEmail,
+          personalMessage: giftData.personalMessage,
+          deliveryDate: giftData.deliveryDate,
+          deliveryMethod: giftData.deliveryMethod,
+          cardTitle: selectedCard?.title,
+          cardValue: selectedCard?.value,
+          validityMonths: selectedCard?.validityMonths,
+          giftCardNumber: giftCardNumber
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création de la carte cadeau');
       }
-      
-      // Aussi envoyer une copie à l'expéditeur
-      const senderEmailData = {
-        to: giftData.senderEmail,
-        from: 'bonjour@sabina-coiffure.ch',
-        subject: `✅ Confirmation - Carte cadeau envoyée à ${giftData.recipientName}`,
-        html: generateConfirmationEmail()
-      };
-      
-      const senderResult = await sendEmail(senderEmailData);
-      
-      if (!senderResult.success) {
-        console.warn('Erreur envoi confirmation expéditeur:', senderResult.error);
-        // On continue même si l'email expéditeur échoue
-      }
-      
-    } catch (error) {
-      console.error('Erreur envoi email:', error);
-      alert('Erreur lors de l\'envoi de l\'email. Veuillez réessayer.');
+
       setIsProcessing(false);
-      return;
+      setIsConfirmed(true);
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la création de la carte cadeau. Veuillez réessayer ou nous contacter au 076 376 15 14.');
+      setIsProcessing(false);
     }
-    
-    setIsProcessing(false);
-    setIsConfirmed(true);
   };
 
   const generateGiftCardEmail = () => {

@@ -30,12 +30,28 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulation d'envoi
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setSubmitted(true);
-    setIsSubmitting(false);
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-contact-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'envoi du message');
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Une erreur est survenue. Veuillez réessayer ou nous contacter directement par téléphone.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -114,7 +130,9 @@ export default function ContactForm() {
               </div>
               <div>
                 <p className="font-semibold text-gray-900">Email</p>
-                <p className="text-gray-600">bonjour@sabina-coiffure.ch</p>
+                <a href="mailto:sabinavelagic82@gmail.com" className="text-gray-600 hover:text-rose-600 transition-colors">
+                  sabinavelagic82@gmail.com
+                </a>
               </div>
             </div>
 
@@ -124,7 +142,14 @@ export default function ContactForm() {
               </div>
               <div>
                 <p className="font-semibold text-gray-900">WhatsApp</p>
-                <p className="text-gray-600">+41 XX XXX XX XX</p>
+                <a
+                  href="https://wa.me/41763761514"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 hover:text-green-600 transition-colors"
+                >
+                  076 376 15 14
+                </a>
               </div>
             </div>
           </div>
@@ -215,7 +240,7 @@ export default function ContactForm() {
                 value={formData.phone}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all"
-                placeholder="+41 XX XXX XX XX"
+                placeholder="076 376 15 14"
               />
             </div>
           </div>
