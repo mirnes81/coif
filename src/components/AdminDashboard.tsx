@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, Users, ShoppingCart, Package, Settings, Image, LayoutDashboard, Wrench, Receipt, Menu, X } from 'lucide-react';
+import { LogOut, Users, ShoppingCart, Package, Settings, Image, LayoutDashboard, Wrench, Receipt, Menu, X, Star } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import ClientManagement from './ClientManagement';
@@ -10,8 +10,9 @@ import PricingManager from './PricingManager';
 import GeneralSettings from './GeneralSettings';
 import Statistics from './Statistics';
 import TransactionManagement from './TransactionManagement';
+import ReviewsManagement from './ReviewsManagement';
 
-type TabType = 'dashboard' | 'clients' | 'pos' | 'transactions' | 'products' | 'pricing' | 'gallery' | 'settings';
+type TabType = 'dashboard' | 'clients' | 'pos' | 'transactions' | 'products' | 'pricing' | 'reviews' | 'gallery' | 'settings';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
@@ -25,6 +26,7 @@ export default function AdminDashboard() {
     { id: 'clients' as TabType, label: 'Clients', icon: Users },
     { id: 'products' as TabType, label: 'Produits', icon: Package },
     { id: 'pricing' as TabType, label: 'Tarifs', icon: Settings },
+    { id: 'reviews' as TabType, label: 'Avis Google', icon: Star },
     { id: 'gallery' as TabType, label: 'Galerie', icon: Image },
     { id: 'settings' as TabType, label: 'Paramètres', icon: Wrench },
   ];
@@ -115,6 +117,7 @@ export default function AdminDashboard() {
           {activeTab === 'transactions' && <TransactionManagement />}
           {activeTab === 'products' && <ProductManagement />}
           {activeTab === 'pricing' && <PricingManager />}
+          {activeTab === 'reviews' && <ReviewsManagement />}
           {activeTab === 'gallery' && <GallerySettings />}
           {activeTab === 'settings' && <GeneralSettings />}
         </main>
