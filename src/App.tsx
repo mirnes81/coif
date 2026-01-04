@@ -610,7 +610,7 @@ function App() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-rose-500" />
-                        <span>024 441 XX XX</span>
+                        <span>076 376 15 14</span>
                       </div>
                     </div>
                   </div>
@@ -859,9 +859,14 @@ function App() {
                       >
                         <Facebook className="w-6 h-6" />
                       </a>
-                      <button className="bg-green-500 p-3 rounded-xl hover:bg-green-600 transition-colors">
+                      <a
+                        href="https://wa.me/41763761514"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-green-500 p-3 rounded-xl hover:bg-green-600 transition-colors"
+                      >
                         <MessageCircle className="w-6 h-6" />
-                      </button>
+                      </a>
                     </div>
                   </div>
 
